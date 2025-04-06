@@ -42,13 +42,13 @@ public class User {
 	
 	@OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,mappedBy = "users")
 	@JsonIgnore
-	private Set<UserRole> userroles = new HashSet<>();
+	private Set<Userrole> userroles = new HashSet<>();
 
-	public Set<UserRole> getUserroles() {
+	public Set<Userrole> getUserroles() {
 		return userroles;
 	}
 
-	public void setUserroles(Set<UserRole> userroles) {
+	public void setUserroles(Set<Userrole> userroles) {
 		this.userroles = userroles;
 	}
 
@@ -63,6 +63,9 @@ public class User {
 		this.mobileno = mobileno;
 		this.password = password;
 		this.profile = profile;
+	}
+
+	public User() {
 	}
 
 	public String getProfile() {

@@ -9,7 +9,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-public class UserRole {
+public class Userrole {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
