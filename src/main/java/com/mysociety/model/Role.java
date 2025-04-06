@@ -25,13 +25,17 @@ public class Role {
 	private String rolename;
 	
 	@OneToMany(cascade=CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "roles")
-	private Set<UserRole> useroles = new HashSet<>();
+	private Set<Userrole> useroles = new HashSet<>();
 	
 	
 	public Role(long roleid, String rolename) {
 		super();
 		this.roleid = roleid;
 		this.rolename = rolename;
+	}
+
+	public Role() {
+		// TODO Auto-generated constructor stub
 	}
 
 	public long getRoleid() {
