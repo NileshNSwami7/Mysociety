@@ -1,10 +1,12 @@
 package com.mysociety.serviceimpl;
 
+import java.io.IOException;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mysociety.exception.Mysocietyexception;
 import com.mysociety.model.User;
 import com.mysociety.model.Userrole;
 import com.mysociety.repository.Rolerepository;
@@ -25,10 +27,10 @@ public class Userserviceimpl implements Userservice {
 
 	@Override
 	public User createUser(User user, Set<Userrole> userrole) {
-		User localuser = this.userrepository.findByUsernameAndEmailAndMobileno(user.getUsername(), user.getEmail(), user.getMobileno());
+		User localuser = this.userrepository.findByUsername(user.getUsername());
 		try {
 			if (localuser != null) {
-				System.out.println("user is already present...!");
+				throw new Mysocietyexception("User is already present...!");
 			} else {
 				for(Userrole urole:userrole) {
 					rolerepository.save(urole.getRoles());
@@ -37,8 +39,10 @@ public class Userserviceimpl implements Userservice {
 				localuser = this.userrepository.save(user);
 			}
 		} catch (Exception e) {
+			System.err.println("Error: " + e.getMessage());
 			e.printStackTrace();
-			System.out.println("User ia already present...!");
+			throw new Mysocietyexception("User is already present...!");
+
 		}
 		return localuser;
 	}
