@@ -6,6 +6,9 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +20,7 @@ import com.mysociety.model.Userrole;
 import com.mysociety.service.Userservice;
 
 @RestController
-@RequestMapping("/mysociety/user")
+@RequestMapping("/mysociety/api/user")
 public class Usercontroller {
 
 	@Autowired
@@ -28,8 +31,8 @@ public class Usercontroller {
 		
 		Set<Userrole> uroles = new HashSet<>();
 		Role roles = new Role();
-		roles.setRoleid(101);
-		roles.setRolename("Admin");
+		roles.setRoleid(102);
+		roles.setRolename("Family");
 		
 		Userrole userroles = new Userrole();
 		userroles.setUser(user);
@@ -37,5 +40,15 @@ public class Usercontroller {
 		
 		uroles.add(userroles);
 		return this.userservice.createUser(user, uroles);
+	}
+	
+	@GetMapping("/{username}")
+	public ResponseEntity<?> getUserdetails(@PathVariable("username") String username) {
+		return this.userservice.getUser(username);
+	}
+	
+	@DeleteMapping("/{userid}")
+	public ResponseEntity<?> deletUser(@PathVariable("userid") Long userid){
+		return this.userservice.deleteUser(userid);
 	}
 }

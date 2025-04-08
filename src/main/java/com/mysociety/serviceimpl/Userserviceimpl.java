@@ -1,9 +1,14 @@
 package com.mysociety.serviceimpl;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.mysociety.exception.Mysocietyexception;
@@ -45,5 +50,29 @@ public class Userserviceimpl implements Userservice {
 
 		}
 		return localuser;
+	}
+	
+	@Override
+	public ResponseEntity<?> getUser(String username) {
+		Optional<User>usr = Optional.ofNullable(this.userrepository.findByUsername(username));
+		if(!usr.isPresent()) {
+		 throw new Mysocietyexception("User entry is not peresent");
+		}
+		else {
+			return new ResponseEntity<>(usr,HttpStatus.OK);
+		}
+	}
+	
+	@Override
+	public ResponseEntity<?> deleteUser(Long userid){
+		Map<String,Boolean> userresponse = new HashMap<>();
+		Optional<User> user = this.userrepository.findById(userid);
+		if(user.isPresent()) {
+			this.userrepository.deleteById(userid);
+			userresponse.put("User deleted successfully...!", Boolean.TRUE);
+		}else {
+			 throw new Mysocietyexception("Invalid Userid...");
+		}
+		return ResponseEntity.ok(userresponse);
 	}
 }
