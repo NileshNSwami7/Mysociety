@@ -19,6 +19,6 @@ public class MysocietyExceptionHandler {
 			WebRequest request)
 	{
 	ErrorDetails error = new ErrorDetails(HttpStatus.CONFLICT.value(),new Date(),exception.getMessage());
-	return new ResponseEntity<>(error,HttpStatus.CONFLICT);
+	return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
 	}
 }
