@@ -6,6 +6,6 @@ import com.mysociety.model.User;
 
 public interface Userrepository extends JpaRepository<User, Long>{
 
-	public User findByUsernameAndEmailAndMobileno(String username, String email, String mobileno);
+	public User findByUsername(String username);
 
 }
