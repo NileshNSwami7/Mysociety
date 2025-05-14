@@ -1,8 +1,11 @@
 package com.mysociety.model;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -12,6 +15,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -39,7 +44,17 @@ public class User {
 	private boolean enabled=true;
 	@Column(name="profile")
 	private String profile;
-	
+	@Column(name="Date")
+	private LocalDate date;
+	@Column(name="address")
+	private String address;
+	@Column(name="flatno")
+	private String flatno;
+	@Column(name="documentfile",columnDefinition="LONGBLOB")
+	@Lob
+	private byte[] documentfile;
+	@ManyToOne
+	private Role role;
 	@OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,mappedBy = "users")
 	@JsonIgnore
 	private Set<Userrole> userroles = new HashSet<>();
@@ -53,7 +68,8 @@ public class User {
 	}
 
 	public User(long userid, String username, String firstname, String lastname, String email, String mobileno,
-			String password, boolean status,String profile) {
+			String password, boolean enabled, String profile, LocalDate date, String address, String flatno,
+			byte[] documentfile, Set<Userrole> userroles) {
 		super();
 		this.userid = userid;
 		this.username = username;
@@ -62,7 +78,13 @@ public class User {
 		this.email = email;
 		this.mobileno = mobileno;
 		this.password = password;
+		this.enabled = enabled;
 		this.profile = profile;
+		this.date = date;
+		this.address = address;
+		this.flatno = flatno;
+		this.documentfile = documentfile;
+		this.userroles = userroles;
 	}
 
 	public User() {
@@ -138,6 +160,46 @@ public class User {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getFlatno() {
+		return flatno;
+	}
+
+	public void setFlatno(String flatno) {
+		this.flatno = flatno;
+	}
+
+	public byte[] getDocumentfile() {
+		return documentfile;
+	}
+
+	public void setDocumentfile(byte[] documentfile) {
+		this.documentfile = documentfile;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 

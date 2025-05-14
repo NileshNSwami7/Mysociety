@@ -16,12 +16,11 @@ import com.mysociety.model.User;
 import com.mysociety.model.Userrole;
 import com.mysociety.repository.Rolerepository;
 import com.mysociety.repository.Userrepository;
+import com.mysociety.security.UserSecurityDetails;
 import com.mysociety.service.Userservice;
 
-import jakarta.transaction.Transactional;
 
 @Service
-
 public class Userserviceimpl implements Userservice {
 
 	@Autowired
@@ -29,6 +28,9 @@ public class Userserviceimpl implements Userservice {
 	
 	@Autowired
 	public Rolerepository rolerepository;
+	
+//	@Autowired
+//	public BCryptPasswordEncoder secureconfig;
 
 	@Override
 	public User createUser(User user, Set<Userrole> userrole) {
@@ -41,6 +43,7 @@ public class Userserviceimpl implements Userservice {
 					rolerepository.save(urole.getRoles());
 				}
 				user.getUserroles().addAll(userrole);
+
 				localuser = this.userrepository.save(user);
 			}
 		} catch (Exception e) {
@@ -54,18 +57,16 @@ public class Userserviceimpl implements Userservice {
 	
 	@Override
 	public ResponseEntity<?> getUser(String username) {
-		Optional<User>usr = Optional.ofNullable(this.userrepository.findByUsername(username));
+		Optional<User> usr = Optional.ofNullable(this.userrepository.findByUsername(username));
 		if(!usr.isPresent()) {
 		 throw new Mysocietyexception("User entry is not peresent");
 		}
-		else {
-			return new ResponseEntity<>(usr,HttpStatus.OK);
-		}
+		return new ResponseEntity<>(usr.get(),HttpStatus.OK);
 	}
 	
 	@Override
 	public ResponseEntity<?> deleteUser(Long userid){
-		Map<String,Boolean> userresponse = new HashMap<>();
+		Map<String, Boolean> userresponse = new HashMap<>();
 		Optional<User> user = this.userrepository.findById(userid);
 		if(user.isPresent()) {
 			this.userrepository.deleteById(userid);
