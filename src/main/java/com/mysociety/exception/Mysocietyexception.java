@@ -15,4 +15,6 @@ public class Mysocietyexception extends RuntimeException{
 		super(message);
 	}
 	
+	
+	
 }

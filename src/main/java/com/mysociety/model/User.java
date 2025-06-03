@@ -40,8 +40,8 @@ public class User {
 	private String mobileno;
 	@Column(name="password")
 	private String password;
-	@Column(name="status")
-	private boolean enabled=true;
+	@Column(name="profilestatus", nullable = false)
+	private boolean profileStatus;
 	@Column(name="profile")
 	private String profile;
 	@Column(name="Date")
@@ -53,11 +53,17 @@ public class User {
 	@Column(name="documentfile",columnDefinition="LONGBLOB")
 	@Lob
 	private byte[] documentfile;
+	@Column(name="ProvidedBy")
+	private String providedBy;
+	
 	@ManyToOne
 	private Role role;
+	
 	@OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,mappedBy = "users")
 	@JsonIgnore
 	private Set<Userrole> userroles = new HashSet<>();
+	
+	
 
 	public Set<Userrole> getUserroles() {
 		return userroles;
@@ -68,7 +74,7 @@ public class User {
 	}
 
 	public User(long userid, String username, String firstname, String lastname, String email, String mobileno,
-			String password, boolean enabled, String profile, LocalDate date, String address, String flatno,
+			String password, boolean profileStatus, String profile, LocalDate date, String address, String flatno,
 			byte[] documentfile, Set<Userrole> userroles) {
 		super();
 		this.userid = userid;
@@ -78,7 +84,7 @@ public class User {
 		this.email = email;
 		this.mobileno = mobileno;
 		this.password = password;
-		this.enabled = enabled;
+		this.profileStatus = profileStatus;
 		this.profile = profile;
 		this.date = date;
 		this.address = address;
@@ -154,12 +160,12 @@ public class User {
 		this.password = password;
 	}
 
-	public boolean isEnabled() {
-		return enabled;
+	public boolean isProfileStatus() {
+		return profileStatus;
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	public void setProfileStatus(boolean profileStatus) {
+		this.profileStatus = profileStatus;
 	}
 
 	public LocalDate getDate() {
@@ -192,6 +198,14 @@ public class User {
 
 	public void setDocumentfile(byte[] documentfile) {
 		this.documentfile = documentfile;
+	}
+	
+	public String getProvidedBy() {
+		return providedBy;
+	}
+
+	public void setProvidedBy(String providedBy) {
+		this.providedBy = providedBy;
 	}
 
 	public Role getRole() {

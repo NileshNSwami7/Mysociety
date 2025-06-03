@@ -7,8 +7,12 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.mysociety.exception.Mysocietyexception;
@@ -29,8 +33,9 @@ public class Userserviceimpl implements Userservice {
 	@Autowired
 	public Rolerepository rolerepository;
 	
-//	@Autowired
-//	public BCryptPasswordEncoder secureconfig;
+	
+	@Autowired
+	public PasswordEncoder passwordencoder;
 
 	@Override
 	public User createUser(User user, Set<Userrole> userrole) {
@@ -43,7 +48,8 @@ public class Userserviceimpl implements Userservice {
 					rolerepository.save(urole.getRoles());
 				}
 				user.getUserroles().addAll(userrole);
-
+				user.setPassword(passwordencoder.encode(user.getPassword()));
+				user.setProvidedBy("User login");
 				localuser = this.userrepository.save(user);
 			}
 		} catch (Exception e) {
@@ -56,8 +62,8 @@ public class Userserviceimpl implements Userservice {
 	}
 	
 	@Override
-	public ResponseEntity<?> getUser(String username) {
-		Optional<User> usr = Optional.ofNullable(this.userrepository.findByUsername(username));
+	public ResponseEntity<?> getUser(String username,String email) {
+		Optional<User> usr = Optional.ofNullable(this.userrepository.findByUsernameAndEmail(username,email));
 		if(!usr.isPresent()) {
 		 throw new Mysocietyexception("User entry is not peresent");
 		}
@@ -75,5 +81,26 @@ public class Userserviceimpl implements Userservice {
 			 throw new Mysocietyexception("Invalid Userid...");
 		}
 		return ResponseEntity.ok(userresponse);
+	}
+	
+	public boolean findUser(String email) {
+		
+		Optional<User>usr = this.userrepository.findByEmail(email);
+		if(usr.isPresent()) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	public ResponseEntity<?>updateGoogleUser(User user,Set<Userrole>userrole){
+		Optional<User>usr = this.userrepository.findByEmail(user.getEmail());
+		if(user == null) {
+		return null;
+		}else{
+			return ResponseEntity.ok(this.userrepository.save(user));
+		}
+	
+		
 	}
 }

@@ -1,21 +1,41 @@
 package com.mysociety.security;
 
+import jakarta.servlet.http.Cookie;
+
 public class JwtResponse {
 	
-	private String token;
+	private Cookie token;
+	private Cookie refreshtoken;
 
-	public JwtResponse(String token) {
+	
+
+	public JwtResponse(Cookie token) {
 		super();
 		this.token = token;
 	}
+	
+	public JwtResponse(Cookie access, Cookie refresh) {
+		super();
+		this.token = access;
+		this.refreshtoken = refresh;
+	}
 
-	public String getToken() {
+	public Cookie getToken() {
 		return token;
 	}
 
-	public void setToken(String token) {
+	public void setToken(Cookie token) {
 		this.token = token;
 	}
+
+	public Cookie getRefreshtoken() {
+		return refreshtoken;
+	}
+
+	public void setRefreshtoken(Cookie refreshtoken) {
+		this.refreshtoken = refreshtoken;
+	}
+
 	
 	
 }

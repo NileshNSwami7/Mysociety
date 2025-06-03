@@ -16,15 +16,23 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.mysociety.security.JwtAuthenticationEntryPoint;
 import com.mysociety.security.JwtAuthenticationFilter;
+import com.mysociety.security.JwtUtils;
+import com.mysociety.security.OAuthAthenticationSuccessHandler;
+import com.mysociety.security.PathSecuritProperties;
 import com.mysociety.serviceimpl.UserSecurityServiceImpl;
 
 @EnableWebSecurity
 @Configuration
 @EnableMethodSecurity
 public class UserSecuirtyConfiguration  {
+	
+	@Autowired
+	private JwtUtils jwtutils;
 	
 	@Autowired
 	private JwtAuthenticationEntryPoint unAuthorizeHandler;
@@ -34,7 +42,12 @@ public class UserSecuirtyConfiguration  {
 	
 	@Autowired
 	private JwtAuthenticationFilter jwtauthenticationfilter;
+	
+	@Autowired
+	private PathSecuritProperties pathsecurityproperties;
 	 
+	@Autowired
+	private OAuthAthenticationSuccessHandler successhandler;
 	
 	@Bean
 	public SecurityFilterChain securefilterchain(HttpSecurity http) throws Exception{	
@@ -44,11 +57,16 @@ public class UserSecuirtyConfiguration  {
 					.exceptionHandling(exception->
 						exception.authenticationEntryPoint(unAuthorizeHandler))
 					.sessionManagement(session->
-						session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+						session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 					.authorizeHttpRequests(auth->auth
-							.requestMatchers("/generate-token","/user/").permitAll()
+//							.requestMatchers("/generate-token","/refresh-access-token","/mysociety/api/user/**").permitAll()
+							.requestMatchers(pathsecurityproperties.getPublicpaths().toArray(new String[0])).permitAll()
 							.requestMatchers(HttpMethod.OPTIONS).permitAll()
 							.anyRequest().authenticated())
+					.oauth2Login(oauth2 -> oauth2
+//					        .defaultSuccessUrl("http://localhost:4200/signup", true)
+					        .successHandler(successhandler)
+					        )
 					.addFilterBefore(jwtauthenticationfilter, UsernamePasswordAuthenticationFilter.class)
 					.authenticationProvider(daoAthenticationProvider())
 					.build();
@@ -58,9 +76,14 @@ public class UserSecuirtyConfiguration  {
 	}
 	
 	@Bean
-	public PasswordEncoder passwordencoder() {
-		return NoOpPasswordEncoder.getInstance();
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
+	
+//	@Bean
+//	public PasswordEncoder passwordEncoder() {
+//		return NoOpPasswordEncoder.getInstance();
+//	}
 	
 //	@Bean
 //	public PasswordEncoder passwordencoder() {
@@ -74,8 +97,26 @@ public class UserSecuirtyConfiguration  {
 	public DaoAuthenticationProvider daoAthenticationProvider() {
 		DaoAuthenticationProvider authprovider = new DaoAuthenticationProvider();
 		authprovider.setUserDetailsService(this.usersecurityerviceimpl);
-		authprovider.setPasswordEncoder(passwordencoder());
+		authprovider.setPasswordEncoder(passwordEncoder());
 		return authprovider;
 	}
 	
+	@Bean
+	public JwtAuthenticationFilter jwtfilter() {
+		return new JwtAuthenticationFilter(jwtutils, usersecurityerviceimpl);
+	}
+	
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+	  return new WebMvcConfigurer() {
+	    @Override
+	    public void addCorsMappings(CorsRegistry registry) {
+	      registry.addMapping("/**")
+	              .allowedOrigins("http://localhost:4200")
+	              .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+	              .allowedHeaders("*")
+	              .allowCredentials(true);
+	    }
+	  };
+	}
 }

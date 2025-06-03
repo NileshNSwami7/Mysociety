@@ -1,17 +1,7 @@
 package com.mysociety;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import com.mysociety.model.Role;
-import com.mysociety.model.User;
-import com.mysociety.model.Userrole;
-import com.mysociety.service.Userservice;
 
 @SpringBootApplication
 public class MySocietyApplication {
